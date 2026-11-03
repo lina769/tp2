@@ -1,34 +1,34 @@
 pipeline {
   agent any
   options { timestamps() }
+  triggers { pollSCM('H/5 * * * *') }
   stages {
-    stage('Cloner le dépôt') {
+    stage('Checkout') {
       steps {
         git url: 'https://github.com/lina769/tp2.git', branch: 'main'
       }
     }
-    stage('Étape 1 : Vérification du dépôt') {
+    stage('Build') {
       steps {
-        bat 'echo === Étape 1 : Vérification du dépôt ==='
-        bat 'git status'
-      }
-    }
-    stage('Étape 2 : Afficher le contenu du projet') {
-      steps {
-        bat 'echo === Étape 2 : Afficher le contenu du projet ==='
+        bat 'echo === Build : verification des fichiers ==='
         bat 'dir'
+        bat 'if not exist *.html exit 1'
+        bat 'if not exist *.css exit 1'
       }
     }
-    stage('Étape 3 : Simuler un déploiement local') {
+    stage('Test') {
       steps {
-        bat 'echo === Étape 3 : Simuler un déploiement local ==='
-        bat 'echo Le fichier index.html est prêt à être affiché'
+        bat 'echo === Test : le HTML contient un titre h1 ==='
+        bat 'findstr /i "<h1>" *.html'
       }
     }
-    stage('Étape 4 : Fin du build') {
+    stage('Delivery') {
       steps {
-        bat 'echo === Étape 4 : Fin du build ==='
-        bat 'echo SUCCESS'
+        bat 'echo === Delivery : copie vers le dossier de livraison ==='
+        bat 'if not exist C:\\DevOps\\delivery mkdir C:\\DevOps\\delivery'
+        bat 'copy *.html C:\\DevOps\\delivery /Y'
+        bat 'copy *.css C:\\DevOps\\delivery /Y'
+        archiveArtifacts artifacts: '**/*.html, **/*.css', fingerprint: true
       }
     }
   }
