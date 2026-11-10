@@ -1,6 +1,6 @@
 services:
   web:
-    image: Docker Hub/monapp:latest
+    image: linabenkhalifa/monapp:latest
     ports:
-      - "8080:80"
+      - "8082:80"
     restart: unless-stopped
